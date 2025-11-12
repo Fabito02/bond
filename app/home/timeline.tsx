@@ -9,17 +9,11 @@ import { Searchbar } from "react-native-paper";
 import { useState, useEffect, useRef } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
 import { dispensersData } from "@/data";
+import { DispenserType } from "@/types";
 
 type DispensersProps = {
   title: string;
-  data: {
-    id: string;
-    title: string;
-    image: any;
-    tipo: string;
-    data: Date;
-    volume: number;
-  }[]
+  data: DispenserType[]
 }
 
 export default function Dispensers() {
@@ -47,7 +41,7 @@ export default function Dispensers() {
       })
       .map(([hora, items]) => ({ title: hora, data: items }));
 
-    setData(dispensersOrdenados);
+    setData(dispensersOrdenados as DispensersProps[]);
   }, []);
 
   useEffect(() => {

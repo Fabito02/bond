@@ -2,6 +2,7 @@ import myTheme from "@/theme/theme";
 import { View } from "react-native";
 import { useState, useEffect } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
+import { DispenserType } from "@/types";
 
 type Props = {
   type:

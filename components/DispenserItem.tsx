@@ -4,26 +4,12 @@ import { TouchableRipple, Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import CategoriaIcon from "./CategoriaIcon";
 import Lucide from "@react-native-vector-icons/lucide";
+import { DispenserType } from "@/types";
 
 function DispenserItem({
   item,
 }: {
-  item: {
-    id: string;
-    title: string;
-    image: any;
-    tipo:
-      | "cachorro"
-      | "gato"
-      | "pássaro"
-      | "tartaruga"
-      | "roedor"
-      | "peixe"
-      | "coelho"
-      | "outro";
-    data: Date;
-    volume: number;
-  };
+  item: DispenserType;
 }) {
   const router = useRouter();
 
@@ -47,7 +33,7 @@ function DispenserItem({
       borderless
       style={styles.dispenser}
       onPress={() => {
-        // router.push(`/dispensers/${item.id}`);
+        // router.push(``);
       }}
     >
       <View style={styles.dispenserContent}>
@@ -75,6 +61,7 @@ function DispenserItem({
         </View>
         <CategoriaIcon
           type={item.tipo }
+          size={25}
           style={{ position: "absolute", right: 0, top: 0 }}
         />
       </View>

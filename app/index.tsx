@@ -8,7 +8,7 @@ export default function Index() {
   const router = useRouter();
 
   useEffect(() => {
-    setIsAuthenticated(false);
+    setIsAuthenticated(true);
   }, []);
 
   useEffect(() => {

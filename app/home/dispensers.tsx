@@ -12,6 +12,7 @@ import { useState } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
 import { useRouter } from "expo-router";
 import { dispensersData } from "@/data";
+import { DispenserType } from "@/types";
 
 type DispensersProps = {
   visible: boolean;
@@ -48,7 +49,7 @@ export default function Dispensers({ visible }: DispensersProps) {
         <FlatList
           data={dispensersData}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <DispenserItem item={item} />}
+          renderItem={({ item }) => <DispenserItem item={item as DispenserType} />}
           showsVerticalScrollIndicator={false}
           numColumns={1}
           onScroll={onScroll}

@@ -6,6 +6,7 @@ import CategoriaItem from "@/components/CategoriaItem";
 import { ScrollView } from "react-native-gesture-handler";
 import DispenserItem from "@/components/DispenserItem";
 import { dispensersData } from "@/data";
+import { DispenserType } from "@/types";
 
 export default function Home() {
 
@@ -49,7 +50,7 @@ export default function Home() {
           <View>
             <View>
               {dispensersData.map((item) => (
-                <DispenserItem key={item.id} item={item} />
+                <DispenserItem key={item.id} item={item as DispenserType} />
               ))}
             </View>
           </View>

@@ -4,15 +4,7 @@ import { TouchableRipple, Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { memo } from "react";
 import DispenserItem from "./DispenserItem";
-
-type DispenserType = {
-  id: string;
-  title: string;
-  image: any;
-  tipo: string;
-  data: Date;
-  volume: number;
-};
+import { DispenserType } from "@/types";
 
 type Props = {
   data: DispenserType[];
