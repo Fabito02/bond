@@ -3,9 +3,10 @@ import { StyleSheet } from "react-native";
 import { TouchableRipple, Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import CategoriaIcon from "@components/CategoriaIcon";
+import { CategoriaType } from "@/types";
 
 type Props = {
-  categoria: "cachorro" | "gato" | "pássaro" | "tartaruga" | "roedor" | "peixe" | "coelho" | "outro";
+  categoria: CategoriaType;
   route?: any
 };
 

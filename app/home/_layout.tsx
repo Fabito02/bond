@@ -18,10 +18,10 @@ export default function HomeLayout() {
 
   useEffect(() => {
     const title =
-      pathname === undefined
+      pathname === undefined || !isNaN(Number(pathname))
         ? `Olá, ${nome}!👋`
         : pathname.charAt(0).toUpperCase() + pathname.slice(1);
-    setTitle(title);
+      setTitle(title);
   });
 
   const navigation = useNavigation();
@@ -35,7 +35,7 @@ export default function HomeLayout() {
       <Appbar.Header
         style={{
           backgroundColor: myTheme.colors.surfaceContainerLowest,
-          marginBottom: 16,
+          marginBottom: 8,
         }}
       >
         <Appbar.Action

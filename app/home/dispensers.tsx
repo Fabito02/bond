@@ -11,7 +11,7 @@ import { AnimatedFAB, Searchbar } from "react-native-paper";
 import { useState } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
 import { useRouter } from "expo-router";
-import { dispensersData } from "@/data";
+import { DispensersData } from "@/data";
 import { DispenserType } from "@/types";
 
 type DispensersProps = {
@@ -47,8 +47,8 @@ export default function Dispensers({ visible }: DispensersProps) {
           iconColor={myTheme.colors.primary}
         />
         <FlatList
-          data={dispensersData}
-          keyExtractor={(item) => item.id}
+          data={DispensersData}
+          keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => <DispenserItem item={item as DispenserType} />}
           showsVerticalScrollIndicator={false}
           numColumns={1}

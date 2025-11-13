@@ -2,20 +2,13 @@ import myTheme from "@/theme/theme";
 import { View } from "react-native";
 import { useState, useEffect } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
-import { DispenserType } from "@/types";
+import { CategoriaType, DispenserType } from "@/types";
+import { StyleProps } from "react-native-reanimated";
 
 type Props = {
-  type:
-    | "cachorro"
-    | "gato"
-    | "pássaro"
-    | "tartaruga"
-    | "roedor"
-    | "peixe"
-    | "coelho"
-    | "outro";
+  type: CategoriaType
   size?: number;
-  style?: any;
+  style?: StyleProps;
 };
 
 function CategoriaIcon({ type, size, style }: Props) {
@@ -25,9 +18,8 @@ function CategoriaIcon({ type, size, style }: Props) {
     pássaro: { cor: "#F6BF62", icon: "bird" },
     tartaruga: { cor: "#96CE97", icon: "turtle" },
     roedor: { cor: "#B3ABE9", icon: "rat" },
-    peixe: { cor: "#93C9FF", icon: "fish" },
     coelho: { cor: "#97DEDC", icon: "rabbit" },
-    outro: { cor: "gray", icon: "paw-print" },
+    outro: { cor: "#6FACE9", icon: "paw-print" },
   } as const;
 
   const { cor, icon } = iconMap[type] || iconMap.outro;
@@ -43,7 +35,7 @@ function CategoriaIcon({ type, size, style }: Props) {
           justifyContent: "center",
           alignItems: "center",
         },
-        style,
+        style as StyleProps,
       ]}
     >
       <Lucide name={icon} size={size || 24} color="#fff" />

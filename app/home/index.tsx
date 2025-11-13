@@ -5,7 +5,7 @@ import Lucide from "@react-native-vector-icons/lucide";
 import CategoriaItem from "@/components/CategoriaItem";
 import { ScrollView } from "react-native-gesture-handler";
 import DispenserItem from "@/components/DispenserItem";
-import { dispensersData } from "@/data";
+import { DispensersData } from "@/data";
 import { DispenserType } from "@/types";
 
 export default function Home() {
@@ -49,7 +49,7 @@ export default function Home() {
           </View>
           <View>
             <View>
-              {dispensersData.map((item) => (
+              {DispensersData.map((item) => (
                 <DispenserItem key={item.id} item={item as DispenserType} />
               ))}
             </View>
@@ -68,7 +68,6 @@ export default function Home() {
               <View style={{ gap: 16, height: "auto", flexDirection: "row" }}>
                 <CategoriaItem categoria="cachorro" />
                 <CategoriaItem categoria="gato" />
-                <CategoriaItem categoria="peixe" />
                 <CategoriaItem categoria="pássaro" />
                 <CategoriaItem categoria="roedor" />
                 <CategoriaItem categoria="coelho" />

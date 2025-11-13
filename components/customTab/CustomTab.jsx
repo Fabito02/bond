@@ -95,7 +95,7 @@ export default function MyCustomTabBar({ state, descriptors, navigation }) {
                     route.name === "index"
                       ? "house"
                       : route.name === "timeline"
-                      ? "refresh-ccw"
+                      ? "calendar-days"
                       : "archive"
                   }
                   size={24}

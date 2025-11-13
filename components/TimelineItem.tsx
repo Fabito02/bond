@@ -1,6 +1,6 @@
 import myTheme from "@/theme/theme";
 import { View, Image, StyleSheet } from "react-native";
-import { TouchableRipple, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { memo } from "react";
 import DispenserItem from "./DispenserItem";
@@ -13,19 +13,23 @@ type Props = {
 function TimelineItem({ data }: Props) {
   const router = useRouter();
 
-  const inputDate = new Date(data[0].data);
-  const agora = new Date();
-  inputDate.setSeconds(0, 0);
-  agora.setSeconds(0, 0);
+  const inputDate = data[0].data;
+  const agora = new Date().toISOString().split("T")[0];
 
   const setBolinhaCor = (data: string) => {
-    if (inputDate.getHours() === agora.getHours()) {
+    if (inputDate === agora) {
       return myTheme.colors.primary;
-    } else if (inputDate.getHours() < agora.getHours()) {
+    } else if (inputDate < agora) {
       return myTheme.colors.error;
     } else {
       return myTheme.colors.tertiary;
     }
+  };
+  
+  const formatarDataLocal = (dataISO: string) => {
+    const [ano, mes, dia] = dataISO.split("-").map(Number);
+    const data = new Date(ano, mes - 1, dia); // <-- mês começa do 0
+    return data.toLocaleDateString();
   };
 
   return (
@@ -36,7 +40,7 @@ function TimelineItem({ data }: Props) {
             styles.bolinha,
             {
               backgroundColor: setBolinhaCor(
-                data[0].data.toISOString().slice(0, 10),
+                data[0].data,
               ),
             },
           ]}
@@ -46,17 +50,15 @@ function TimelineItem({ data }: Props) {
       <View style={styles.right}>
         <View style={{ flexDirection: "row", gap: 6 }}>
           <Text variant="labelMedium">
-            {data[0].data.toLocaleTimeString(undefined, {
-              hour: "2-digit"
-            })}h
+            {formatarDataLocal(data[0].data)}
             {(() => {
-              return inputDate.getHours() === agora.getHours() ? " -" : "";
+              return inputDate === agora ? " -" : "";
             })()}
           </Text>
           <Text variant="labelMedium" style={{ color: myTheme.colors.primary }}>
             {(() => {
-              return inputDate.getHours() === agora.getHours()
-                ? "Hora Atual"
+              return inputDate === agora
+                ? "Data Atual"
                 : "";
             })()}
           </Text>

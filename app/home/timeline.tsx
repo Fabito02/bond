@@ -1,66 +1,44 @@
-import {
-  View,
-  StyleSheet,
-  FlatList,
-} from "react-native";
+import { View, StyleSheet, FlatList } from "react-native";
 import myTheme from "@/theme/theme";
 import TimelineItem from "@/components/TimelineItem";
 import { Searchbar } from "react-native-paper";
 import { useState, useEffect, useRef } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
-import { dispensersData } from "@/data";
+import { DispensersData } from "@/data";
 import { DispenserType } from "@/types";
 
 type DispensersProps = {
   title: string;
-  data: DispenserType[]
-}
+  data: DispenserType[];
+};
 
 export default function Dispensers() {
   const [data, setData] = useState<DispensersProps[]>([]);
+  const flatListRef = useRef(null);
 
-  const flatListRef = useRef(null)
-  
   useEffect(() => {
-    const dispensersPorHora: { [hora: string]: typeof dispensersData } = dispensersData.reduce(
-      (acumulador, atual) => {
-        const dateObj = atual.data instanceof Date ? atual.data : new Date(atual.data);
-        const horaStr = dateObj.toLocaleTimeString(undefined, { hour: '2-digit' });
-        if (!acumulador[horaStr]) acumulador[horaStr] = [];
-        acumulador[horaStr].push(atual);
-        return acumulador;
-      },
-      {} as { [hora: string]: typeof dispensersData }
-    );
+    const dispensersPorData: { [hora: string]: typeof DispensersData } =
+      DispensersData.reduce(
+        (acumulador, atual) => {
+          const dataExecucao = atual.data;
+          if (!acumulador[dataExecucao]) acumulador[dataExecucao] = [];
+          acumulador[dataExecucao].push(atual);
+          return acumulador;
+        },
+        {} as { [hora: string]: typeof DispensersData },
+      );
 
-    const dispensersOrdenados = Object.entries(dispensersPorHora)
-      .sort(([horaA], [horaB]) => {
-        const [hA, mA] = horaA.split(':').map(Number);
-        const [hB, mB] = horaB.split(':').map(Number);
-        return (hA * 60 + mA) - (hB * 60 + mB);
+    const dispensersOrdenados = Object.entries(dispensersPorData)
+      .sort(([dataA], [dataB]) => {
+        return new Date(dataA).getTime() - new Date(dataB).getTime();
       })
-      .map(([hora, items]) => ({ title: hora, data: items }));
+      .map(([data, items]) => ({
+        title: data,
+        data: items,
+      }));
 
     setData(dispensersOrdenados as DispensersProps[]);
   }, []);
-
-  useEffect(() => {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const agora = new Date();
-    const horaAtualStr = agora.toLocaleTimeString(undefined, { hour: '2-digit' });
-    const indiceAlvo = data.findIndex(item => item.title === horaAtualStr);
-
-    if (indiceAlvo !== -1) {
-      setTimeout(() => {
-        (flatListRef.current as FlatList<any> | null)?.scrollToIndex({
-          animated: true,
-          index: indiceAlvo,
-          viewPosition: 0.5,
-        });
-      }, 100);
-    }
-  }, [data]);
 
   return (
     <View
