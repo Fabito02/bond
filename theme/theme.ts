@@ -26,7 +26,7 @@ export const myTheme = {
     onBackground: "#171D16",
     surface: "#F4FCEF",
     onSurface: "#171D16",
-    surfaceVariant: "#D9E6D4",
+    surfaceVariant: "#f4f4f4",
     onSurfaceVariant: "#676c66ff",
     outline: "#a8a8a8ff",
     outlineVariant: "#BDCAB9",

@@ -12,32 +12,15 @@ function DispenserItem({ item }: { item: DispenserType }) {
   const hora = item?.hora;
 
   return (
-    <View onTouchEnd={() => {
-        router.push(`/dispenser/${item.id}`);
-      }} style={{ marginBottom: 16 }}>
-      {!item.ativo && (
-        <View
-          style={{ justifyContent: "center", alignItems: "center" }}
-        >
-          <Text
-            style={{
-              position: "absolute",
-              zIndex: 2,
-              color: "#ffffff",
-              fontSize: 18,
-              fontFamily: "PoppinsSemiBold",
-              transform: [{ translateY: 62 }],
-            }}
-          >
-            Inativo
-          </Text>
-
-          <View style={styles.inativo}></View>
-        </View>
-      )}
+    <View
+      style={{ marginBottom: 16 }}
+    >
       <TouchableRipple
         borderless
         style={styles.dispenser}
+        onPress={() => {
+          router.push(`/dispenser/${item.id}`);
+        }}
       >
         <View style={styles.dispenserContent}>
           <Image source={item.image} style={styles.imagem} />
@@ -51,21 +34,27 @@ function DispenserItem({ item }: { item: DispenserType }) {
             <Text variant="bodySmall">
               {"Quantidade: " + item.volume || 0} Kg
             </Text>
-            <View
-              style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
-            >
-              <Lucide
-                name="refresh-cw"
-                size={16}
-                color={myTheme.colors.primary}
-              />
-              <Text variant="bodySmall" style={{ marginRight: 6 }}>
-                {repeticao.charAt(0).toUpperCase() + repeticao.slice(1) ||
-                  "Não programado"}
+            { item.ativo ? (
+              <View
+                style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+              >
+                <Lucide
+                  name="refresh-cw"
+                  size={16}
+                  color={myTheme.colors.primary}
+                />
+                <Text variant="bodySmall" style={{ marginRight: 6 }}>
+                  {repeticao.charAt(0).toUpperCase() + repeticao.slice(1) ||
+                    "Não programado"}
+                </Text>
+                <Lucide name="clock" size={16} color={myTheme.colors.primary} />
+                <Text variant="bodySmall">{hora || "Não programado"}</Text>
+              </View>
+            ) : (
+              <Text variant="bodySmall" style={{color: myTheme.colors.error}}>
+                Sem reposição automática
               </Text>
-              <Lucide name="clock" size={16} color={myTheme.colors.primary} />
-              <Text variant="bodySmall">{hora || "Não programado"}</Text>
-            </View>
+            )}
           </View>
           <CategoriaIcon
             type={item.tipo}
@@ -87,7 +76,7 @@ const styles = StyleSheet.create({
     minHeight: 85,
     overflow: "hidden",
     opacity: 0.9,
-    backgroundColor: "#a9a9a9",
+    backgroundColor: "#888888",
     zIndex: 1,
     position: "absolute",
     top: 0,

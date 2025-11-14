@@ -58,7 +58,7 @@ function TimelineItem({ data }: Props) {
           <Text variant="labelMedium" style={{ color: myTheme.colors.primary }}>
             {(() => {
               return inputDate === agora
-                ? "Data Atual"
+                ? "Hoje"
                 : "";
             })()}
           </Text>
