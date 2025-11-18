@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react';
 import {
   Gesture,
   GestureDetector,
-  GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import { Icon, useTheme } from 'react-native-paper';
 import Animated, {
@@ -63,6 +62,11 @@ export const MaterialSwitchListItem = ({
   const handleWidth = useSharedValue(selected ? 24 : 16);
   const [active, setActive] = useState(selected);
   const [isPressed, setIsPressed] = useState(false);
+  
+  const callbackFunction = () => {
+    onSwitchPress();
+    setIsPressed(false);
+  };
 
   //#region
   const pan = Gesture.Pan()
@@ -200,10 +204,6 @@ export const MaterialSwitchListItem = ({
     opacity: 0.18,
     justifyContent: 'center',
   }));
-  const callbackFunction = () => {
-    onSwitchPress();
-    setIsPressed(false);
-  };
   const changeSwitch = (withCallback: boolean) => {
     if (active) {
       handleHeight.value = withTiming(16, { duration: 100 });
@@ -298,9 +298,11 @@ export const MaterialSwitchListItem = ({
 
   return (
     <List.Item
-      left={() => (
-        <List.Icon style={{ paddingRight: leftIcon ? 8 : 0 }} icon={leftIcon} />
-      )}
+      left={() =>
+        leftIcon ? (
+          <List.Icon style={{ paddingRight: 8 }} icon={leftIcon} />
+        ) : null
+      }
       rippleColor={rippleColor}
       titleStyle={titleStyle}
       disabled={disabled}
@@ -317,7 +319,6 @@ export const MaterialSwitchListItem = ({
             <Animated.View style={handleOutlineStyle} key={3}></Animated.View>
           </View>
           <Animated.View style={trackStyle} key={1}>
-            <GestureHandlerRootView>
               <GestureDetector gesture={pan}>
                 <Pressable
                   disabled={disabled}
@@ -339,7 +340,6 @@ export const MaterialSwitchListItem = ({
                     changeSwitch(true);
                   }}></Pressable>
               </GestureDetector>
-            </GestureHandlerRootView>
           </Animated.View>
           <View pointerEvents="none" style={styles.stateOuter}>
             <Animated.View style={handleStyle} key={2}>

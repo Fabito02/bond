@@ -1,12 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
-import { Button, Icon, useTheme } from 'react-native-paper';
-import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { Icon, useTheme } from "react-native-paper";
+import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -15,7 +11,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
 type SwitchProps = {
   selected: boolean;
@@ -39,6 +35,11 @@ export const MaterialSwitch = ({
   const handleWidth = useSharedValue(selected ? 24 : 16);
   const [active, setActive] = useState(selected);
   const [isPressed, setIsPressed] = useState(false);
+  const callbackFunction = () => {
+    onSwitchPress();
+    setIsPressed(false);
+  };
+
   //#region
   const pan = Gesture.Pan()
     .activateAfterLongPress(100)
@@ -67,7 +68,7 @@ export const MaterialSwitch = ({
         position.value = withTiming(10);
         handleHeight.value = withTiming(24, { duration: 160 });
         handleWidth.value = withTiming(24, { duration: 160 }, (finished) => {
-          'worklet';
+          "worklet";
           if (finished && !active) {
             runOnJS(callbackFunction)();
           }
@@ -79,7 +80,7 @@ export const MaterialSwitch = ({
         position.value = withTiming(-10);
         handleHeight.value = withTiming(16, { duration: 160 });
         handleWidth.value = withTiming(16, { duration: 160 }, (finished) => {
-          'worklet';
+          "worklet";
           if (finished && active) {
             runOnJS(callbackFunction)();
           }
@@ -94,7 +95,7 @@ export const MaterialSwitch = ({
           transform: [{ translateX: active ? 10 : -10 }],
           height: active ? 24 : 16,
           width: active ? 24 : 16,
-          marginVertical: 'auto',
+          marginVertical: "auto",
           minHeight: switchOffIcon ? 24 : 16,
           minWidth: switchOffIcon ? 24 : 16,
           opacity: active ? 1 : 0.36,
@@ -102,33 +103,33 @@ export const MaterialSwitch = ({
             ? theme.colors.surface
             : theme.colors.onSurface,
           borderRadius: 20,
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
         }
       : {
           transform: [{ translateX: position.value }],
           opacity: 1,
           height: handleHeight.value,
           width: handleWidth.value,
-          marginVertical: 'auto',
+          marginVertical: "auto",
           minHeight: switchOffIcon ? 24 : 16,
           minWidth: switchOffIcon ? 24 : 16,
           backgroundColor: interpolateColor(
             position.value,
             [-10, 10],
-            [theme.colors.outline, theme.colors.onPrimary]
+            [theme.colors.outline, theme.colors.onPrimary],
           ),
           borderRadius: 20,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }
+          justifyContent: "center",
+          alignItems: "center",
+        },
   );
   const trackStyle = useAnimatedStyle(() =>
     disabled
       ? {
           borderWidth: 2,
           borderRadius: 16,
-          justifyContent: 'center',
+          justifyContent: "center",
           height: 32,
           width: 52,
           opacity: 0.12,
@@ -138,51 +139,48 @@ export const MaterialSwitch = ({
           borderColor: theme.colors.onSurface,
         }
       : {
-          alignItems: 'center',
+          alignItems: "center",
           opacity: 1,
           backgroundColor: interpolateColor(
             position.value,
             [-10, 10],
-            [theme.colors.surfaceVariant, theme.colors.primary]
+            [theme.colors.surfaceVariant, theme.colors.primary],
           ),
           borderColor: interpolateColor(
             position.value,
             [-10, 10],
-            [theme.colors.outline, theme.colors.primary]
+            [theme.colors.outline, theme.colors.primary],
           ),
           borderWidth: 2,
           borderRadius: 16,
-          justifyContent: 'center',
+          justifyContent: "center",
           height: 32,
           width: 52,
-        }
+        },
   );
   const handleOutlineStyle = useAnimatedStyle(() => ({
     height: 40,
     width: 40,
     borderRadius: 20,
-    position: 'absolute',
+    position: "absolute",
     transform: [{ translateX: position.value }],
     backgroundColor: !isPressed
-      ? 'transparent'
+      ? "transparent"
       : interpolateColor(
           position.value,
           [-10, 10],
-          [theme.colors.onSurface, theme.colors.primary]
+          [theme.colors.onSurface, theme.colors.primary],
         ),
-    alignItems: 'center',
+    alignItems: "center",
     opacity: 0.18,
-    justifyContent: 'center',
+    justifyContent: "center",
   }));
-  const callbackFunction = () => {
-    onSwitchPress();
-    setIsPressed(false);
-  };
+
   const iconOnStyle = useAnimatedStyle(() => ({
     opacity: disabled
       ? 0.38
       : interpolate(position.value, [0, 10], [0, 1], Extrapolate.CLAMP),
-    overflow: 'hidden',
+    overflow: "hidden",
     transform: [
       {
         scale: interpolate(position.value, [0, 10], [0, 1], Extrapolate.CLAMP),
@@ -192,17 +190,17 @@ export const MaterialSwitch = ({
           position.value,
           [0, 10],
           [-90, 0],
-          Extrapolate.CLAMP
+          Extrapolate.CLAMP,
         )}deg`,
       },
     ],
   }));
   const iconOffStyle = useAnimatedStyle(() => ({
-    position: 'absolute',
+    position: "absolute",
     opacity: disabled
       ? 0.38
       : interpolate(position.value, [-10, 0], [1, 0], Extrapolate.CLAMP),
-    overflow: 'hidden',
+    overflow: "hidden",
     transform: [
       {
         scale: interpolate(position.value, [-10, 0], [1, 0], Extrapolate.CLAMP),
@@ -212,7 +210,7 @@ export const MaterialSwitch = ({
           position.value,
           [-10, 0],
           [-90, 0],
-          Extrapolate.CLAMP
+          Extrapolate.CLAMP,
         )}deg`,
       },
     ],
@@ -227,12 +225,12 @@ export const MaterialSwitch = ({
         { duration: 250 },
         withCallback
           ? (finished) => {
-              'worklet';
+              "worklet";
               if (finished) {
                 runOnJS(callbackFunction)();
               }
             }
-          : undefined
+          : undefined,
       );
       setActive(false);
     } else {
@@ -244,12 +242,12 @@ export const MaterialSwitch = ({
         { duration: 250 },
         withCallback
           ? (finished) => {
-              'worklet';
+              "worklet";
               if (finished) {
                 runOnJS(callbackFunction)();
               }
             }
-          : undefined
+          : undefined,
       );
       setActive(true);
     }
@@ -270,26 +268,25 @@ export const MaterialSwitch = ({
         <Animated.View style={handleOutlineStyle} key={3}></Animated.View>
       </View>
       <Animated.View style={trackStyle} key={1}>
-        <GestureHandlerRootView>
-          <GestureDetector gesture={pan}>
-            <Pressable
-              disabled={disabled}
-              style={{
-                justifyContent: 'center',
-                height: 32,
-                width: 52,
-                alignItems: 'center',
-              }}
-              onLongPress={(event) => {
-                handleHeight.value = withTiming(28, { duration: 100 });
-                handleWidth.value = withTiming(28, { duration: 100 });
-              }}
-              onPress={() => {
-                setIsPressed(true);
-                changeSwitch(true);
-              }}></Pressable>
-          </GestureDetector>
-        </GestureHandlerRootView>
+        <GestureDetector gesture={pan}>
+          <Pressable
+            disabled={disabled}
+            style={{
+              justifyContent: "center",
+              height: 32,
+              width: 52,
+              alignItems: "center",
+            }}
+            onLongPress={(event) => {
+              handleHeight.value = withTiming(28, { duration: 100 });
+              handleWidth.value = withTiming(28, { duration: 100 });
+            }}
+            onPress={() => {
+              setIsPressed(true);
+              changeSwitch(true);
+            }}
+          ></Pressable>
+        </GestureDetector>
       </Animated.View>
       <View pointerEvents="none" style={styles.stateOuter}>
         <Animated.View style={handleStyle} key={2}>
@@ -322,10 +319,10 @@ export const MaterialSwitch = ({
 };
 const styles = StyleSheet.create({
   stateOuter: {
-    justifyContent: 'center',
+    justifyContent: "center",
     height: 32,
     width: 52,
-    alignItems: 'center',
-    position: 'absolute',
+    alignItems: "center",
+    position: "absolute",
   },
 });
