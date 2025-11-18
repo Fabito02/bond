@@ -1,14 +1,12 @@
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, ScrollView } from "react-native";
 import myTheme from "@/theme/theme";
-import { Appbar, TextInput, Text, Button } from "react-native-paper";
-import { useEffect, useState } from "react";
+import { Appbar, TextInput, Text, Button, Menu } from "react-native-paper";
+import { useEffect, useState, useRef } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
 import { useRouteInfo, useRouter } from "expo-router/build/hooks";
 import { DispensersData } from "@/data";
-import { CategoriaType, DispenserType } from "@/types";
+import { CategoriaType, DispenserType, RepeticaoType } from "@/types";
 import CategoriaIcon from "@/components/CategoriaIcon";
-import { ScrollView } from "react-native-gesture-handler";
-import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialSwitchListItem } from "@/components/Material Switch/MaterialSwitchListItem";
 
@@ -17,26 +15,54 @@ export default function Dispenser({}) {
   const id = routeInfo.params.id;
   const router = useRouter();
 
+  const formatarHoraParaString = (date: Date): string => {
+    const horas = date.getHours().toString().padStart(2, "0");
+    const minutos = date.getMinutes().toString().padStart(2, "0");
+    return `${horas}:${minutos}`;
+  };
+
+  const stringParaDate = (horaString: string): Date => {
+    const [horas, minutos] = horaString.split(":").map(Number);
+    const date = new Date();
+    date.setHours(horas, minutos, 0, 0);
+    return date;
+  };
+
   const [dispenser, setDispenser] = useState<DispenserType | undefined>();
   const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
-  const [repeticao, setRepeticao] = useState("");
+  const [time, setTime] = useState(formatarHoraParaString(new Date()));
+  const [openData, setOpenData] = useState(false);
+  const [openTime, setOpenTime] = useState(false);
+  const [repeticao, setRepeticao] = useState<RepeticaoType>();
   const [isActive, setIsActive] = useState(false);
+  const [categoria, setCategoria] = useState<CategoriaType | undefined>();
+  const [descricao, setDescricao] = useState("");
+  const [title, setTitle] = useState("");
+  const [visibleCategoria, setVisibleCategoria] = useState(false);
+  const [visibleRepeticao, setVisibleRepeticao] = useState(false);
+  const [height, setHeight] = useState(0);
 
   useEffect(() => {
     const dispenser = DispensersData.find(
       (d) => d.id.toString() === id.toString(),
     );
     setDispenser(dispenser);
-    setRepeticao(dispenser?.tipoRepeticao || "");
+    setRepeticao(dispenser?.tipoRepeticao || "único");
     setIsActive(dispenser?.ativo || false);
+    setCategoria(dispenser?.tipo);
+    setTime(dispenser?.hora || formatarHoraParaString(new Date()));
+    setDescricao(dispenser?.descricao || "");
+    setTitle(dispenser?.title || "");
 
     const data = dispenser?.data || "";
     if (data) {
       const [ano, mes, dia] = data.split("-").map(Number);
       setDate(new Date(ano, mes - 1, dia));
     }
-  }, [id]);
+
+    setOpenData(false);
+    setOpenTime(false);
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -74,9 +100,9 @@ export default function Dispenser({}) {
           icon={() => (
             <Lucide name="camera" color={myTheme.colors.primary} size={24} />
           )}
-          // onPress={openDrawer}
         />
       </Appbar.Header>
+
       <View style={{ width: "100%", alignItems: "center" }}>
         <View>
           <Image
@@ -89,17 +115,18 @@ export default function Dispenser({}) {
             }}
           />
           <CategoriaIcon
-            type={dispenser?.tipo as CategoriaType}
+            type={categoria as CategoriaType}
             size={28}
             style={{ position: "absolute", top: 0, right: 0 }}
           />
         </View>
       </View>
+
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <Text style={{ color: myTheme.colors.primary }}>Nome</Text>
           <TextInput
-            value={dispenser?.title || ""}
+            value={title}
             mode="outlined"
             left={
               <TextInput.Icon
@@ -115,24 +142,163 @@ export default function Dispenser({}) {
             outlineStyle={styles.inputOutline}
             placeholder="Nome do seu pet"
             onChangeText={(text) =>
-              setDispenser((prev) =>
-                prev ? { ...prev, title: text } : undefined,
-              )
+              setTitle(text)
             }
             style={styles.input}
           />
+          <Text style={{ color: myTheme.colors.primary }}>Descrição</Text>
+          <TextInput
+            value={descricao}
+            mode="outlined"
+            multiline
+            onContentSizeChange={(event) => {
+              setHeight(event.nativeEvent.contentSize.height);
+            }}
+            style={{
+              height,
+              ...styles.input
+            }}
+            left={
+              <TextInput.Icon
+                icon={() => (
+                  <Lucide
+                    name="pencil"
+                    color={myTheme.colors.primary}
+                    size={24}
+                  />
+                )}
+              />
+            }
+            outlineStyle={styles.inputOutline}
+            placeholder="Nome do seu pet"
+            onChangeText={(text) =>
+              setDescricao(text)
+            }
+          />
+
+          <Text style={{ color: myTheme.colors.primary }}>Categoria</Text>
+
+          <Menu
+            visible={visibleCategoria}
+            onDismiss={() => {
+              setVisibleCategoria(!visibleCategoria);
+            }}
+            anchor={
+              <View style={{ width: "auto" }}>
+                <Button
+                  onPress={() => {
+                    setVisibleCategoria(!visibleCategoria);
+                  }}
+                  mode="outlined"
+                  style={{ borderRadius: 16, borderWidth: 0, flex: 1 }}
+                  contentStyle={{
+                    backgroundColor: myTheme.colors.onPrimaryContainer,
+                    paddingVertical: 6,
+                  }}
+                  labelStyle={{
+                    fontWeight: "300",
+                    fontFamily: "InterRegular",
+                  }}
+                >
+                  {categoria
+                    ? categoria.charAt(0).toUpperCase() +
+                      categoria.slice(1) +
+                      " "
+                    : "Selecionar"}
+
+                  <Lucide
+                    name="chevron-down"
+                    size={18}
+                    color={myTheme.colors.primary}
+                  />
+                </Button>
+              </View>
+            }
+            contentStyle={{
+              backgroundColor: myTheme.colors.surfaceContainer,
+              borderRadius: 16,
+              paddingHorizontal: 8,
+              marginBottom: -8,
+            }}
+          >
+            <Menu.Item
+              style={styles.menuItem}
+              titleStyle={{ fontSize: 16 }}
+              onPress={() => {
+                (setCategoria("cachorro"), setVisibleCategoria(!categoria));
+              }}
+              title="Cachorro"
+            />
+            <Menu.Item
+              style={styles.menuItem}
+              titleStyle={{ fontSize: 16 }}
+              onPress={() => {
+                (setCategoria("gato"), setVisibleCategoria(!categoria));
+              }}
+              title="Gato"
+            />
+            <Menu.Item
+              style={styles.menuItem}
+              titleStyle={{ fontSize: 16 }}
+              onPress={() => {
+                (setCategoria("pássaro"), setVisibleCategoria(!categoria));
+              }}
+              title="Pássaro"
+            />
+            <Menu.Item
+              style={styles.menuItem}
+              titleStyle={{ fontSize: 16 }}
+              onPress={() => {
+                (setCategoria("tartaruga"), setVisibleCategoria(!categoria));
+              }}
+              title="Tartaruga"
+            />
+            <Menu.Item
+              style={styles.menuItem}
+              titleStyle={{ fontSize: 16 }}
+              onPress={() => {
+                (setCategoria("roedor"), setVisibleCategoria(!categoria));
+              }}
+              title="Roedor"
+            />
+            <Menu.Item
+              style={styles.menuItem}
+              titleStyle={{ fontSize: 16 }}
+              onPress={() => {
+                (setCategoria("coelho"), setVisibleCategoria(!categoria));
+              }}
+              title="Coelho"
+            />
+            <Menu.Item
+              style={styles.menuItem}
+              titleStyle={{ fontSize: 16 }}
+              onPress={() => {
+                (setCategoria("outro"), setVisibleCategoria(!categoria));
+              }}
+              title="Outro"
+            />
+          </Menu>
 
           <MaterialSwitchListItem
             title="Reposição automática"
             selected={isActive}
+            fluid
             onPress={() => setIsActive(!isActive)}
             listStyle={{
               backgroundColor: myTheme.colors.onPrimaryContainer,
               borderRadius: 16,
             }}
             titleStyle={{ color: myTheme.colors.primary, marginLeft: 6 }}
-            leftIcon={() => <Lucide name="calendar-clock" size={24} color={myTheme.colors.primary} style={{ transform: 'translateX(16px)' }} />}
+            leftIcon={() => (
+              <Lucide
+                name="calendar-clock"
+                size={24}
+                color={myTheme.colors.primary}
+                style={{ transform: "translateX(16px)" }}
+              />
+            )}
           />
+
           {isActive && (
             <>
               <Text style={{ color: myTheme.colors.primary }}>
@@ -143,17 +309,16 @@ export default function Dispenser({}) {
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 8,
-                  paddingBottom: 20,
                 }}
               >
                 <View style={styles.dataInput}>
                   <Text
-                    onPress={() => setOpen(true)}
+                    onPress={() => setOpenData(true)}
                     style={{ textAlign: "center" }}
                   >
-                    {date.toLocaleDateString("pt-BR")}
+                    {date.toLocaleDateString()}
                   </Text>
-                  {open && (
+                  {openData && (
                     <DateTimePicker
                       value={date}
                       mode="date"
@@ -163,25 +328,116 @@ export default function Dispenser({}) {
                         if (selectedDate) {
                           setDate(selectedDate);
                         }
-                        setOpen(false);
+                        setOpenData(false);
                       }}
                     />
                   )}
                 </View>
-                <View style={styles.select}>
-                  <Picker
-                    selectedValue={repeticao}
-                    onValueChange={(itemValue, itemIndex) =>
-                      setRepeticao(itemValue)
-                    }
-                    style={styles.picker}
-                  >
-                    <Picker.Item label="Único" value="único" />
-                    <Picker.Item label="Diário" value="diário" />
-                    <Picker.Item label="Semanal" value="semanal" />
-                    <Picker.Item label="Mensal" value="mensal" />
-                  </Picker>
-                </View>
+
+                <Menu
+                  visible={visibleRepeticao}
+                  onDismiss={() => {
+                    setVisibleRepeticao(!visibleRepeticao);
+                  }}
+                  anchor={
+                    <View style={{ width: "auto" }}>
+                      <Button
+                        onPress={() => {
+                          setVisibleRepeticao(!visibleRepeticao);
+                        }}
+                        mode="outlined"
+                        style={{ borderRadius: 16, borderWidth: 0, flex: 1 }}
+                        contentStyle={{
+                          backgroundColor: myTheme.colors.surfaceContainer,
+                          paddingVertical: 6,
+                        }}
+                        labelStyle={{
+                          color: "#000",
+                          fontWeight: "300",
+                          fontFamily: "InterRegular",
+                        }}
+                      >
+                        {repeticao
+                          ? repeticao.charAt(0).toUpperCase() +
+                            repeticao.slice(1) +
+                            " "
+                          : "Selecionar"}
+
+                        <Lucide name="chevron-down" size={18} color="#000" />
+                      </Button>
+                    </View>
+                  }
+                  contentStyle={{
+                    backgroundColor: myTheme.colors.surfaceContainer,
+                    borderRadius: 16,
+                    paddingHorizontal: 8,
+                    marginBottom: -8,
+                  }}
+                >
+                  <Menu.Item
+                    style={styles.menuItem}
+                    titleStyle={{ fontSize: 16 }}
+                    onPress={() => {
+                      setRepeticao("único");
+                      setVisibleRepeticao(!visibleRepeticao);
+                    }}
+                    title="Único"
+                  />
+                  <Menu.Item
+                    style={styles.menuItem}
+                    titleStyle={{ fontSize: 16 }}
+                    onPress={() => {
+                      setRepeticao("diário");
+                      setVisibleRepeticao(!visibleRepeticao);
+                    }}
+                    title="Diário"
+                  />
+                  <Menu.Item
+                    style={styles.menuItem}
+                    titleStyle={{ fontSize: 16 }}
+                    onPress={() => {
+                      setRepeticao("semanal");
+                      setVisibleRepeticao(!visibleRepeticao);
+                    }}
+                    title="Semanal"
+                  />
+                  <Menu.Item
+                    style={styles.menuItem}
+                    titleStyle={{ fontSize: 16 }}
+                    onPress={() => {
+                      setRepeticao("mensal");
+                      setVisibleRepeticao(!visibleRepeticao);
+                    }}
+                    title="Mensal"
+                  />
+                </Menu>
+              </View>
+
+              <Text style={{ color: myTheme.colors.primary }}>
+                Hora da execução
+              </Text>
+
+              <View style={styles.horaInput}>
+                <Text
+                  style={{ textAlign: "center" }}
+                  onPress={() => setOpenTime(true)}
+                >
+                  {time}
+                </Text>
+                {openTime && (
+                  <DateTimePicker
+                    value={stringParaDate(time)}
+                    mode="time"
+                    accentColor={myTheme.colors.primary}
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      if (selectedDate) {
+                        setTime(formatarHoraParaString(selectedDate));
+                      }
+                      setOpenTime(false);
+                    }}
+                  />
+                )}
               </View>
             </>
           )}
@@ -193,6 +449,7 @@ export default function Dispenser({}) {
           onPress={() => router.push("/home")}
           style={styles.button}
           mode="contained"
+          contentStyle={{ paddingVertical: 4 }}
           icon={() => <Lucide color="#ffffff" size={16} name="salad" />}
         >
           Alimentar
@@ -202,6 +459,7 @@ export default function Dispenser({}) {
           style={styles.button}
           buttonColor={myTheme.colors.error}
           mode="contained"
+          contentStyle={{ paddingVertical: 4 }}
           icon={() => <Lucide color="#ffffff" size={16} name="trash" />}
         >
           Deletar
@@ -212,10 +470,11 @@ export default function Dispenser({}) {
 }
 
 const styles = StyleSheet.create({
-  picker: {
-    backgroundColor: myTheme.colors.surfaceContainer,
-    borderRadius: 16,
+  menuItem: {
+    backgroundColor: myTheme.colors.surfaceContainerLowest,
+    borderRadius: 14,
     width: "100%",
+    marginBottom: 8,
   },
   container: {
     flex: 1,
@@ -223,7 +482,7 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 12,
   },
-  button: { flex: 1, borderRadius: 16, paddingVertical: 4 },
+  button: { flex: 1, borderRadius: 16 },
   input: {
     backgroundColor: myTheme.colors.onPrimaryContainer,
     width: "100%",
@@ -236,7 +495,13 @@ const styles = StyleSheet.create({
     backgroundColor: myTheme.colors.surfaceContainer,
     borderRadius: 16,
     padding: 16,
-    width: 120,
+    maxWidth: 120,
+  },
+  horaInput: {
+    backgroundColor: myTheme.colors.surfaceContainer,
+    borderRadius: 16,
+    padding: 16,
+    maxWidth: 80,
   },
   select: {
     backgroundColor: myTheme.colors.surfaceContainer,

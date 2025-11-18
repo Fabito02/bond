@@ -7,6 +7,8 @@ export type CategoriaType =
   | "coelho"
   | "outro";
 
+export type RepeticaoType = "único" | "diário" | "semanal" | "mensal";
+
 export type DispenserType = {
   id: number;
   title: string;
@@ -15,6 +17,7 @@ export type DispenserType = {
   volume: number;
   hora: string;
   ativo: boolean;
-  tipoRepeticao: "único" | "diário" | "semanal" | "mensal";
+  tipoRepeticao: RepeticaoType;
   data: string;
+  descricao: string;
 };
