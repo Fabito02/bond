@@ -336,8 +336,7 @@ export const MaterialSwitchListItem = ({
                   }}
                   // onPressIn={() => setIsPressed(true)}
                   onPress={() => {
-                    setIsPressed(true);
-                    changeSwitch(true);
+                    fluid ? onTap() : changeSwitch(true);
                   }}></Pressable>
               </GestureDetector>
           </Animated.View>
