@@ -1,5 +1,5 @@
 import myTheme from "@/theme/theme";
-import { View, Image, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { memo } from "react";
@@ -28,7 +28,7 @@ function TimelineItem({ data }: Props) {
   
   const formatarDataLocal = (dataISO: string) => {
     const [ano, mes, dia] = dataISO.split("-").map(Number);
-    const data = new Date(ano, mes - 1, dia); // <-- mês começa do 0
+    const data = new Date(ano, mes - 1, dia);
     return data.toLocaleDateString();
   };
 

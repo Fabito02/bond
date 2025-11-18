@@ -1,8 +1,6 @@
-import myTheme from "@/theme/theme";
 import { View } from "react-native";
-import { useState, useEffect } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
-import { CategoriaType, DispenserType } from "@/types";
+import { CategoriaType } from "@/types";
 import { StyleProps } from "react-native-reanimated";
 
 type Props = {

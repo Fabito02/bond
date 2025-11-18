@@ -38,7 +38,7 @@ export default function Dispensers() {
       }));
 
     setData(dispensersOrdenados as DispensersProps[]);
-  }, []);
+  }, [DispensersData]);
 
   return (
     <View

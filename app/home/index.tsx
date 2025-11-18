@@ -1,9 +1,8 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView} from "react-native";
 import { TouchableRipple, Text, Searchbar } from "react-native-paper";
 import myTheme from "@/theme/theme";
 import Lucide from "@react-native-vector-icons/lucide";
 import CategoriaItem from "@/components/CategoriaItem";
-import { ScrollView } from "react-native-gesture-handler";
 import DispenserItem from "@/components/DispenserItem";
 import { DispensersData } from "@/data";
 import { DispenserType } from "@/types";
@@ -39,7 +38,6 @@ export default function Home() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <View style={styles.titulo}>
-            <View style={styles.barraTitulo}></View>
             <Text
               variant="titleMedium"
               style={{ color: myTheme.colors.primary }}
@@ -55,7 +53,6 @@ export default function Home() {
             </View>
           </View>
           <View style={styles.titulo}>
-            <View style={styles.barraTitulo}></View>
             <Text
               variant="titleMedium"
               style={{ color: myTheme.colors.primary }}
@@ -87,12 +84,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     width: "100%",
     gap: 16,
-  },
-  barraTitulo: {
-    width: 5,
-    backgroundColor: myTheme.colors.primary,
-    borderRadius: 8,
-    height: 25,
   },
   titulo: {
     flexDirection: "row",
