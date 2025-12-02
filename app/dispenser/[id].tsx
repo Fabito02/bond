@@ -162,7 +162,7 @@ export default function Dispenser({}) {
               <TextInput.Icon
                 icon={() => (
                   <Lucide
-                    name="pencil"
+                    name="notepad-text"
                     color={myTheme.colors.primary}
                     size={24}
                   />
@@ -190,7 +190,7 @@ export default function Dispenser({}) {
                     setVisibleCategoria(!visibleCategoria);
                   }}
                   mode="outlined"
-                  style={{ borderRadius: 16, borderWidth: 0, flex: 1 }}
+                  style={{ borderRadius: 22, borderWidth: 0, flex: 1 }}
                   contentStyle={{
                     backgroundColor: myTheme.colors.onPrimaryContainer,
                     paddingVertical: 6,
@@ -216,7 +216,7 @@ export default function Dispenser({}) {
             }
             contentStyle={{
               backgroundColor: myTheme.colors.surfaceContainer,
-              borderRadius: 16,
+              borderRadius: 22,
               paddingHorizontal: 8,
               marginBottom: -8,
             }}
@@ -286,7 +286,7 @@ export default function Dispenser({}) {
             onPress={() => setIsActive(!isActive)}
             listStyle={{
               backgroundColor: myTheme.colors.onPrimaryContainer,
-              borderRadius: 16,
+              borderRadius: 22,
             }}
             titleStyle={{ color: myTheme.colors.primary, marginLeft: 6 }}
             leftIcon={() => (
@@ -346,7 +346,7 @@ export default function Dispenser({}) {
                           setVisibleRepeticao(!visibleRepeticao);
                         }}
                         mode="outlined"
-                        style={{ borderRadius: 16, borderWidth: 0, flex: 1 }}
+                        style={{ borderRadius: 22, borderWidth: 0, flex: 1 }}
                         contentStyle={{
                           backgroundColor: myTheme.colors.surfaceContainer,
                           paddingVertical: 6,
@@ -369,7 +369,7 @@ export default function Dispenser({}) {
                   }
                   contentStyle={{
                     backgroundColor: myTheme.colors.surfaceContainer,
-                    borderRadius: 16,
+                    borderRadius: 22,
                     paddingHorizontal: 8,
                     marginBottom: -8,
                   }}
@@ -482,30 +482,30 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 12,
   },
-  button: { flex: 1, borderRadius: 16 },
+  button: { flex: 1, borderRadius: 100 },
   input: {
     backgroundColor: myTheme.colors.onPrimaryContainer,
     width: "100%",
   },
   inputOutline: {
-    borderRadius: 16,
+    borderRadius: 22,
     borderWidth: 0,
   },
   dataInput: {
     backgroundColor: myTheme.colors.surfaceContainer,
-    borderRadius: 16,
+    borderRadius: 22,
     padding: 16,
     maxWidth: 120,
   },
   horaInput: {
     backgroundColor: myTheme.colors.surfaceContainer,
-    borderRadius: 16,
+    borderRadius: 22,
     padding: 16,
     maxWidth: 80,
   },
   select: {
     backgroundColor: myTheme.colors.surfaceContainer,
-    borderRadius: 16,
+    borderRadius: 22,
     paddingVertical: 2,
     paddingHorizontal: 10,
     flex: 1,

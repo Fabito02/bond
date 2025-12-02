@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     display: "none",
   },
   dispenser: {
-    borderRadius: 18,
+    borderRadius: 26,
     width: "100%",
     backgroundColor: myTheme.colors.surfaceContainer,
     padding: 12,
@@ -101,8 +101,7 @@ const styles = StyleSheet.create({
   },
   imagem: {
     width: 100,
-    height: "100%",
-    minHeight: 90,
-    borderRadius: 14,
+    height:100,
+    borderRadius: 18,
   },
 });

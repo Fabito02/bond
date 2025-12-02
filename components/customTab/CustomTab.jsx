@@ -69,8 +69,8 @@ export default function MyCustomTabBar({ state, descriptors, navigation }) {
               onPress={() => handleTamanho(index, route)}
               borderless
               style={{
-                borderRadius: 16,
-                marginVertical: 16,
+                borderRadius: 50,
+                marginVertical: 10,
                 backgroundColor: isFocused
                   ? myTheme.colors.primaryContainer
                   : "#00000000",
@@ -84,8 +84,7 @@ export default function MyCustomTabBar({ state, descriptors, navigation }) {
                     justifyContent: "center",
                     alignItems: "center",
                     flexDirection: "row",
-                    marginHorizontal: 6,
-                    paddingHorizontal: 12,
+                    marginHorizontal: 8,
                   },
                   { width: widthAnims[index] },
                 ]}

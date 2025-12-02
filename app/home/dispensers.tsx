@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import myTheme from "@/theme/theme";
 import DispenserItem from "@/components/DispenserItem";
-import { AnimatedFAB, Searchbar } from "react-native-paper";
+import { FAB, Searchbar } from "react-native-paper";
 import { useState } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
 import { useRouter } from "expo-router";
@@ -55,16 +55,13 @@ export default function Dispensers({ visible }: DispensersProps) {
           onScroll={onScroll}
         />
       </View>
-      <AnimatedFAB
+      <FAB
         color="white"
         icon={({ color, size }) => (
           <Lucide name="plus" color={color} size={size} />
         )}
-        label={"Novo dispositivo"}
-        extended={isExtended}
         // onPress={() => router.push("/novo-dispenser")}
         visible={visible}
-        iconMode={"dynamic"}
         style={[styles.fabStyle]}
       />
     </View>
@@ -83,9 +80,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 16,
     backgroundColor: myTheme.colors.primary,
+    borderRadius: 100
   },
   searchbar: {
-    borderRadius: 16,
+    borderRadius: 22,
     marginBottom: 16,
     backgroundColor: myTheme.colors.onPrimaryContainer,
   },

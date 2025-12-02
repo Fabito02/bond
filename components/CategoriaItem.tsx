@@ -33,7 +33,7 @@ export default CategoriaItem;
 
 const styles = StyleSheet.create({
   categoria: {
-    borderRadius: 20,
+    borderRadius: 22,
     borderTopLeftRadius: 55,
     borderTopRightRadius: 55,
     width: 110,

@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     backgroundColor: myTheme.colors.primary,
   },
   searchbar: {
-    borderRadius: 16,
+    borderRadius: 22,
     marginBottom: 16,
     backgroundColor: myTheme.colors.onPrimaryContainer,
   },

@@ -39,7 +39,7 @@ export const DispensersData: DispenserType[] = [
     ativo: false,
     tipoRepeticao: "semanal",
     data: formatarData(new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + 7)),
-    descricao: "Pássaro alegre que canta todas as manhãs, adora sementes e voar pelo quintal.",
+    descricao: "Pássaro alegre que canta todas as manhãs, adora comer sementes e voar pelo quintal.",
   },
   {
     id: 4,

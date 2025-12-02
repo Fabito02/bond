@@ -1,16 +1,18 @@
 import { MD3LightTheme } from "react-native-paper";
 import themeFonts from "./fonts";
 
+const primary = "#263864"
+
 export const myTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: "#005A57",
+    primary: primary,
     surfaceTint: "#006E27",
     onPrimary: "#FFFFFF",
-    primaryContainer: "#005A5734",
-    onPrimaryContainer: "#005A5714",
-    secondary: "#B68239",
+    primaryContainer: `${primary}34`,
+    onPrimaryContainer: `${primary}18`,
+    secondary: "#DFB44F",
     onSecondary: "#FFFFFF",
     secondaryContainer: "#b375465e",
     onSecondaryContainer: "#6A5E00",

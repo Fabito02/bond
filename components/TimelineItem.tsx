@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   barra: {
     flex: 1,
-    width: 5,
+    width: 4,
     height: "auto",
     backgroundColor: myTheme.colors.outline,
     borderRadius: 18,

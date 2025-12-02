@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   searchbar: {
-    borderRadius: 16,
+    borderRadius: 22,
     marginHorizontal: 16,
     marginBottom: 16,
     backgroundColor: myTheme.colors.onPrimaryContainer,
