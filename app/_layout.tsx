@@ -12,6 +12,8 @@ import { useEffect } from "react";
 import { myTheme } from "../theme/theme";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { DispositivosBottomSheetProvider } from "@/components/DispositivosBottomSheetProvider";
+import { BluetoothProvider } from "@/context/BluetoothContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,13 +38,17 @@ export default function RootLayout() {
     <PaperProvider theme={myTheme}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              animation: "ios_from_right",
-              animationTypeForReplace: "pop",
-            }}
-          />
+          <BluetoothProvider>
+            <DispositivosBottomSheetProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: "ios_from_right",
+                  animationTypeForReplace: "pop",
+                }}
+              />
+            </DispositivosBottomSheetProvider>
+          </BluetoothProvider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </PaperProvider>

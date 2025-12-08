@@ -17,7 +17,7 @@ export default function MyCustomTabBar({ state, descriptors, navigation }) {
   useEffect(() => {
     widthAnims.forEach((anim, i) => {
       Animated.timing(anim, {
-        toValue: i === state.index ? 140 : 55,
+        toValue: i === state.index ? 160 : 55,
         duration: 200,
         useNativeDriver: false,
       }).start();
@@ -29,7 +29,7 @@ export default function MyCustomTabBar({ state, descriptors, navigation }) {
 
     widthAnims.forEach((anim, i) => {
       Animated.timing(anim, {
-        toValue: i === index ? 140 : 60,
+        toValue: i === index ? 160 : 60,
         duration: 200,
         useNativeDriver: false,
       }).start();
@@ -84,7 +84,8 @@ export default function MyCustomTabBar({ state, descriptors, navigation }) {
                     justifyContent: "center",
                     alignItems: "center",
                     flexDirection: "row",
-                    marginHorizontal: 8,
+                    marginHorizontal: 6,
+                    paddingHorizontal: 12,
                   },
                   { width: widthAnims[index] },
                 ]}
@@ -93,8 +94,6 @@ export default function MyCustomTabBar({ state, descriptors, navigation }) {
                   name={
                     route.name === "index"
                       ? "house"
-                      : route.name === "timeline"
-                      ? "calendar-days"
                       : "archive"
                   }
                   size={24}

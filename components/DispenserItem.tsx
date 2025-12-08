@@ -8,13 +8,10 @@ import { DispenserType } from "@/types";
 
 function DispenserItem({ item }: { item: DispenserType }) {
   const router = useRouter();
-  const repeticao = item?.tipoRepeticao;
-  const hora = item?.hora;
-
+  const refeicoes = item?.refeicoes ?? 0;
+  
   return (
-    <View
-      style={{ marginBottom: 16 }}
-    >
+    <View style={{ marginBottom: 16 }}>
       <TouchableRipple
         borderless
         style={styles.dispenser}
@@ -23,41 +20,42 @@ function DispenserItem({ item }: { item: DispenserType }) {
         }}
       >
         <View style={styles.dispenserContent}>
-          <Image source={item.image} style={styles.imagem} />
+          <Image
+            source={
+              item?.image
+                ? {uri:item.image}
+                : require("@/assets/placeholder_dispenser.png")
+            }
+            style={styles.imagem}
+          />
           <View style={{ width: "70%", marginVertical: 4, gap: 3 }}>
             <Text variant="labelLarge" style={{ flex: 1, fontSize: 18 }}>
               {item.title}
             </Text>
             <Text variant="bodySmall">
-              {item.tipo.charAt(0).toUpperCase() + item.tipo.slice(1)}
+              {item.tipo
+                ? item.tipo.charAt(0).toUpperCase() + item.tipo.slice(1)
+                : ""}
             </Text>
             <Text variant="bodySmall">
-              {"Quantidade: " + item.volume || 0} Kg
+              {"Porções: " + (item.porcao ?? 0)}
             </Text>
-            { item.ativo ? (
+            {item.ativo ? (
               <View
                 style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
               >
-                <Lucide
-                  name="refresh-cw"
-                  size={16}
-                  color={myTheme.colors.primary}
-                />
                 <Text variant="bodySmall" style={{ marginRight: 6 }}>
-                  {repeticao.charAt(0).toUpperCase() + repeticao.slice(1) ||
-                    "Não programado"}
+                  {"Refeições diárias: " + refeicoes}
                 </Text>
-                <Lucide name="clock" size={16} color={myTheme.colors.primary} />
-                <Text variant="bodySmall">{hora || "Não programado"}</Text>
               </View>
             ) : (
-              <Text variant="bodySmall" style={{color: myTheme.colors.error}}>
+              <Text variant="bodySmall" style={{ color: myTheme.colors.error }}>
                 Sem reposição automática
               </Text>
             )}
           </View>
           <CategoriaIcon
-            type={item.tipo}
+            type={item.tipo ?? "outro"}
             size={25}
             style={{ position: "absolute", right: 0, top: 0 }}
           />
@@ -90,7 +88,7 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     width: "100%",
     backgroundColor: myTheme.colors.surfaceContainer,
-    padding: 12,
+    padding: 8,
     overflow: "hidden",
   },
   dispenserContent: {
@@ -101,7 +99,7 @@ const styles = StyleSheet.create({
   },
   imagem: {
     width: 100,
-    height:100,
+    height: 100,
     borderRadius: 18,
   },
 });

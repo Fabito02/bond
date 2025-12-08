@@ -1,34 +1,30 @@
-import { Tabs, useSegments } from "expo-router";
+import { Tabs } from "expo-router";
 import CustomTab from "@components/customTab/CustomTab";
 import { View, StyleSheet } from "react-native";
 import myTheme from "@/theme/theme";
 import { useEffect, useState } from "react";
-import { DrawerActions } from "@react-navigation/native";
 import { Appbar } from "react-native-paper";
-import { useRouteInfo } from "expo-router/build/hooks";
-import { useNavigation } from "@react-navigation/native";
+import { useRouteInfo, useRouter } from "expo-router/build/hooks";
 import Lucide from "@react-native-vector-icons/lucide";
+import React from "react";
+import { UserData } from "@/data";
+import { useDispositivosSheet } from "@/components/DispositivosBottomSheetProvider";
 
 export default function HomeLayout() {
-  const segments = useSegments();
-  const nome = "User";
+  const nome = UserData.nome;
   const [title, setTitle] = useState(nome);
   const routeInfo = useRouteInfo();
   const pathname = routeInfo.pathname.split("/")[2];
+  const { openSheet } = useDispositivosSheet();
+  const router = useRouter()
 
   useEffect(() => {
     const title =
       pathname === undefined || !isNaN(Number(pathname))
         ? `Olá, ${nome}!👋`
         : pathname.charAt(0).toUpperCase() + pathname.slice(1);
-      setTitle(title);
+    setTitle(title);
   });
-
-  const navigation = useNavigation();
-
-  const openDrawer = () => {
-    navigation.dispatch(DrawerActions.toggleDrawer());
-  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -39,6 +35,7 @@ export default function HomeLayout() {
         }}
       >
         <Appbar.Action
+          rippleColor={myTheme.colors.primary}
           style={{
             borderWidth: 2,
             borderColor: myTheme.colors.primary,
@@ -46,9 +43,15 @@ export default function HomeLayout() {
           }}
           icon={() => (
             <Lucide name="plus" color={myTheme.colors.primary} size={24} />
-          )} onPress={openDrawer} />
-        <Appbar.Content title={title} titleStyle={{ justifyContent: 'center', alignSelf: 'center' }} />
+          )}
+          onPress={openSheet}
+        />
+        <Appbar.Content
+          title={title}
+          titleStyle={{ justifyContent: "center", alignSelf: "center" }}
+        />
         <Appbar.Action
+        rippleColor={myTheme.colors.primary}
           style={{
             borderWidth: 2,
             borderColor: myTheme.colors.primary,
@@ -56,7 +59,9 @@ export default function HomeLayout() {
           }}
           icon={() => (
             <Lucide name="user" color={myTheme.colors.primary} size={24} />
-          )} onPress={openDrawer} />
+          )}
+          onPress={() => {router.push("/perfil")}}
+        />
       </Appbar.Header>
       <View style={[styles.container]}>
         <View style={styles.tabs}>
@@ -65,8 +70,10 @@ export default function HomeLayout() {
             tabBar={(props) => <CustomTab {...props} />}
           >
             <Tabs.Screen name="index" options={{ tabBarLabel: "Home" }} />
-            <Tabs.Screen name="dispensers" options={{ tabBarLabel: "Dispensers" }} />
-            <Tabs.Screen name="timeline" options={{ tabBarLabel: "Timeline" }} />
+            <Tabs.Screen
+              name="dispensers"
+              options={{ tabBarLabel: "Dispensers" }}
+            />
           </Tabs>
         </View>
       </View>

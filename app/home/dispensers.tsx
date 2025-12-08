@@ -1,31 +1,44 @@
-import {
-  View,
-  StyleSheet,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-  FlatList,
-} from "react-native";
+import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import myTheme from "@/theme/theme";
 import DispenserItem from "@/components/DispenserItem";
 import { FAB, Searchbar } from "react-native-paper";
-import { useState } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
-import { useRouter } from "expo-router";
-import { DispensersData } from "@/data";
 import { DispenserType } from "@/types";
+import { useDispositivosSheet } from "@/components/DispositivosBottomSheetProvider";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type DispensersProps = {
   visible: boolean;
 };
 
 export default function Dispensers({ visible }: DispensersProps) {
-  const [isExtended, setIsExtended] = useState(true);
-  const router = useRouter();
+  const { openSheet } = useDispositivosSheet();
 
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollPosition =
-      Math.floor(event.nativeEvent.contentOffset.y) ?? 0;
-    setIsExtended(currentScrollPosition <= 0);
+  const [dispensers, setDispensers] = useState<DispenserType[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const getDispensers = async () => {
+    try {
+      const dispensers = await AsyncStorage.getItem("dispensersData");
+      if (dispensers !== null) {
+        setDispensers(JSON.parse(dispensers));
+      } else {
+        setDispensers([]);
+      }
+    } catch (error) {
+      setDispensers([]);
+    }
+  };
+
+  useEffect(() => {
+    getDispensers();
+  }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getDispensers();
+    setRefreshing(false);
   };
 
   return (
@@ -47,12 +60,21 @@ export default function Dispensers({ visible }: DispensersProps) {
           iconColor={myTheme.colors.primary}
         />
         <FlatList
-          data={DispensersData}
+          data={dispensers}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[myTheme.colors.primary]}
+            />
+          }
           keyExtractor={(item) => String(item.id)}
-          renderItem={({ item }) => <DispenserItem item={item as DispenserType} />}
+          renderItem={({ item }) => (
+            <DispenserItem item={item as DispenserType} />
+          )}
           showsVerticalScrollIndicator={false}
           numColumns={1}
-          onScroll={onScroll}
+          ListFooterComponent={<View style={{ height: 100 }} />}
         />
       </View>
       <FAB
@@ -60,7 +82,7 @@ export default function Dispensers({ visible }: DispensersProps) {
         icon={({ color, size }) => (
           <Lucide name="plus" color={color} size={size} />
         )}
-        // onPress={() => router.push("/novo-dispenser")}
+        onPress={openSheet}
         visible={visible}
         style={[styles.fabStyle]}
       />
@@ -80,11 +102,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 16,
     backgroundColor: myTheme.colors.primary,
-    borderRadius: 100
+    borderRadius: 100,
   },
   searchbar: {
     borderRadius: 22,
-    marginBottom: 16,
+    marginBottom: 10,
     backgroundColor: myTheme.colors.onPrimaryContainer,
   },
 });

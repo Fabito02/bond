@@ -7,17 +7,21 @@ export type CategoriaType =
   | "coelho"
   | "outro";
 
-export type RepeticaoType = "único" | "diário" | "semanal" | "mensal";
-
 export type DispenserType = {
+  id: string;
+  title: string | null;
+  image: string | null;
+  tipo: CategoriaType | null;
+  porcao: number | null;
+  refeicoes: number | null;
+  ativo: boolean | null;
+  descricao: string | null;
+};
+
+export type UserType = {
   id: number;
-  title: string;
-  image: any;
-  tipo: CategoriaType;
-  volume: number;
-  hora: string;
-  ativo: boolean;
-  tipoRepeticao: RepeticaoType;
-  data: string;
-  descricao: string;
+  nome: string;
+  email: string;
+  senha: string;
+  dataCadastro: string;
 };

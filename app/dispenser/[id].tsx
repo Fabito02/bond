@@ -1,68 +1,143 @@
-import { View, StyleSheet, Image, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  ScrollView,
+  ToastAndroid,
+} from "react-native";
 import myTheme from "@/theme/theme";
 import { Appbar, TextInput, Text, Button, Menu } from "react-native-paper";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Lucide from "@react-native-vector-icons/lucide";
 import { useRouteInfo, useRouter } from "expo-router/build/hooks";
-import { DispensersData } from "@/data";
-import { CategoriaType, DispenserType, RepeticaoType } from "@/types";
+import { CategoriaType, DispenserType } from "@/types";
 import CategoriaIcon from "@/components/CategoriaIcon";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialSwitchListItem } from "@/components/Material Switch/MaterialSwitchListItem";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useBluetooth } from "@/context/BluetoothContext";
+import { useNavigation } from "expo-router";
+
+type NovosValores = {
+  title?: string;
+  ativo?: boolean;
+  porcao?: number;
+  refeicoes?: number;
+  descricao?: string;
+  tipo?: CategoriaType;
+};
 
 export default function Dispenser({}) {
   const routeInfo = useRouteInfo();
   const id = routeInfo.params.id;
   const router = useRouter();
-
-  const formatarHoraParaString = (date: Date): string => {
-    const horas = date.getHours().toString().padStart(2, "0");
-    const minutos = date.getMinutes().toString().padStart(2, "0");
-    return `${horas}:${minutos}`;
-  };
-
-  const stringParaDate = (horaString: string): Date => {
-    const [horas, minutos] = horaString.split(":").map(Number);
-    const date = new Date();
-    date.setHours(horas, minutos, 0, 0);
-    return date;
-  };
+  const navigation = useNavigation();
 
   const [dispenser, setDispenser] = useState<DispenserType | undefined>();
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(formatarHoraParaString(new Date()));
-  const [openData, setOpenData] = useState(false);
-  const [openTime, setOpenTime] = useState(false);
-  const [repeticao, setRepeticao] = useState<RepeticaoType>();
   const [isActive, setIsActive] = useState(false);
   const [categoria, setCategoria] = useState<CategoriaType | undefined>();
   const [descricao, setDescricao] = useState("");
   const [title, setTitle] = useState("");
+  const [porcao, setPorcao] = useState(0);
   const [visibleCategoria, setVisibleCategoria] = useState(false);
-  const [visibleRepeticao, setVisibleRepeticao] = useState(false);
   const [height, setHeight] = useState(0);
+  const [refeicoes, setRefeicoes] = useState(0);
+  const [dispensers, setDispensers] = useState<DispenserType[]>([]);
+
+  const getDispenser = async () => {
+    try {
+      const dispensersString = await AsyncStorage.getItem("dispensersData");
+      if (dispensersString) {
+        const dispensers: DispenserType[] = JSON.parse(dispensersString);
+        setDispensers(dispensers);
+        const dispenser = dispensers.find(
+          (d: DispenserType) => d.id.toString() === id.toString(),
+        );
+        setDispenser(dispenser);
+        setIsActive(dispenser?.ativo || false);
+        setCategoria(dispenser?.tipo || undefined);
+        setDescricao(dispenser?.descricao || "");
+        setTitle(dispenser?.title || "");
+        setPorcao(dispenser?.porcao || 0);
+        setRefeicoes(dispenser?.refeicoes || 0);
+      }
+    } catch (error) {
+      ToastAndroid.show(
+        `Erro ao buscar dispenser: ${error}`,
+        ToastAndroid.SHORT,
+      );
+    }
+  };
+
+  const { connectToDevice, disconnectFromDevice, sendCommand } = useBluetooth();
 
   useEffect(() => {
-    const dispenser = DispensersData.find(
-      (d) => d.id.toString() === id.toString(),
-    );
-    setDispenser(dispenser);
-    setRepeticao(dispenser?.tipoRepeticao || "único");
-    setIsActive(dispenser?.ativo || false);
-    setCategoria(dispenser?.tipo);
-    setTime(dispenser?.hora || formatarHoraParaString(new Date()));
-    setDescricao(dispenser?.descricao || "");
-    setTitle(dispenser?.title || "");
-
-    const data = dispenser?.data || "";
-    if (data) {
-      const [ano, mes, dia] = data.split("-").map(Number);
-      setDate(new Date(ano, mes - 1, dia));
-    }
-
-    setOpenData(false);
-    setOpenTime(false);
+    getDispenser();
   }, []);
+
+  useEffect(() => {
+    if (dispenser) {
+      connectToDevice(dispenser.id);
+    }
+  }, [dispenser]);
+
+  useEffect(() => {
+    const sub = navigation.addListener("beforeRemove", (e) => {
+      disconnectFromDevice();
+    });
+    return sub;
+  }, []);
+
+  const salvar = async () => {
+    try {
+      const novosValores: NovosValores = {
+        title: title,
+        ativo: isActive,
+        porcao: porcao,
+        refeicoes: refeicoes,
+        descricao: descricao,
+        tipo: categoria,
+      };
+
+      const dispenserId = dispenser?.id;
+
+      const novosDispensers = dispensers.map((dispenser) => {
+        if (dispenser.id === dispenserId) {
+          return {
+            ...dispenser,
+            ...novosValores,
+          };
+        }
+        return dispenser;
+      });
+
+      setDispensers(novosDispensers);
+      AsyncStorage.setItem("dispensersData", JSON.stringify(novosDispensers));
+      let automatico = 0
+      if (isActive) {
+        automatico = 1;
+      } else {
+        automatico = 0;
+      }
+      sendCommand("PORCOES:" + porcao);
+      sendCommand("REFEICOES:" + refeicoes);
+      sendCommand("AUTOMATICO:" + automatico);
+      ToastAndroid.show(
+        `Informações salvas`,
+        ToastAndroid.SHORT,
+      );
+    } catch (error) {
+      ToastAndroid.show(
+        `Erro ao salvar informações: ${error}`,
+        ToastAndroid.SHORT,
+      );
+    }
+  };
+  
+  function intervaloRefeicoes(refeicoes: number) {
+    const ms = (24 * 60 * 60 * 1000) / refeicoes;
+    const horas = ms / (1000 * 60 * 60);
+    return Math.round(horas * 100) / 100;
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -85,20 +160,22 @@ export default function Dispenser({}) {
               size={24}
             />
           )}
-          onPress={() => router.back()}
+          onPress={() => {
+            (router.back(), disconnectFromDevice());
+          }}
         />
         <Appbar.Content
-          title={dispenser?.title || ""}
+          title={title}
           titleStyle={{ justifyContent: "center", alignSelf: "center" }}
         />
         <Appbar.Action
           style={{
             borderWidth: 2,
-            borderColor: myTheme.colors.primary,
+            borderColor: myTheme.colors.error,
             marginRight: 16,
           }}
           icon={() => (
-            <Lucide name="camera" color={myTheme.colors.primary} size={24} />
+            <Lucide name="trash" color={myTheme.colors.error} size={24} />
           )}
         />
       </Appbar.Header>
@@ -106,7 +183,11 @@ export default function Dispenser({}) {
       <View style={{ width: "100%", alignItems: "center" }}>
         <View>
           <Image
-            source={dispenser?.image}
+            source={
+              dispenser?.image
+                ? { uri: dispenser.image }
+                : require("@/assets/placeholder_dispenser.png")
+            }
             style={{
               width: 170,
               height: 170,
@@ -141,9 +222,7 @@ export default function Dispenser({}) {
             }
             outlineStyle={styles.inputOutline}
             placeholder="Nome do seu pet"
-            onChangeText={(text) =>
-              setTitle(text)
-            }
+            onChangeText={(text) => setTitle(text)}
             style={styles.input}
           />
           <Text style={{ color: myTheme.colors.primary }}>Descrição</Text>
@@ -156,7 +235,7 @@ export default function Dispenser({}) {
             }}
             style={{
               height,
-              ...styles.input
+              ...styles.input,
             }}
             left={
               <TextInput.Icon
@@ -170,10 +249,8 @@ export default function Dispenser({}) {
               />
             }
             outlineStyle={styles.inputOutline}
-            placeholder="Nome do seu pet"
-            onChangeText={(text) =>
-              setDescricao(text)
-            }
+            placeholder="Descrição do seu pet"
+            onChangeText={(text) => setDescricao(text)}
           />
 
           <Text style={{ color: myTheme.colors.primary }}>Categoria</Text>
@@ -279,6 +356,35 @@ export default function Dispenser({}) {
             />
           </Menu>
 
+          <Text style={{ color: myTheme.colors.primary }}>
+            Número de porções
+          </Text>
+          <TextInput
+            value={porcao.toString()}
+            mode="outlined"
+            right={<TextInput.Affix text="Porções" />}
+            left={
+              <TextInput.Icon
+                icon={() => (
+                  <Lucide
+                    name="weight"
+                    color={myTheme.colors.primary}
+                    size={24}
+                  />
+                )}
+              />
+            }
+            outlineStyle={styles.inputOutline}
+            keyboardType="numeric"
+            placeholder="Peso da porção..."
+            onChangeText={(text) => setPorcao(Number(text))}
+            style={styles.input}
+          />
+
+          <Text style={styles.info}>
+            Uma porção equivale a um segundo de liberação do alimento. Ajuste
+            como necessário.
+          </Text>
           <MaterialSwitchListItem
             title="Reposição automática"
             selected={isActive}
@@ -302,7 +408,7 @@ export default function Dispenser({}) {
           {isActive && (
             <>
               <Text style={{ color: myTheme.colors.primary }}>
-                Próxima execução / Ciclo
+                Refeições por dia
               </Text>
               <View
                 style={{
@@ -311,134 +417,33 @@ export default function Dispenser({}) {
                   gap: 8,
                 }}
               >
-                <View style={styles.dataInput}>
-                  <Text
-                    onPress={() => setOpenData(true)}
-                    style={{ textAlign: "center" }}
-                  >
-                    {date.toLocaleDateString()}
-                  </Text>
-                  {openData && (
-                    <DateTimePicker
-                      value={date}
-                      mode="date"
-                      accentColor={myTheme.colors.primary}
-                      display="default"
-                      onChange={(event, selectedDate) => {
-                        if (selectedDate) {
-                          setDate(selectedDate);
-                        }
-                        setOpenData(false);
-                      }}
+                <TextInput
+                  value={refeicoes.toString()}
+                  mode="outlined"
+                  right={<TextInput.Affix text={"Intervalo: " + intervaloRefeicoes(refeicoes).toString() + " h"} />}
+                  left={
+                    <TextInput.Icon
+                      icon={() => (
+                        <Lucide
+                          name="refresh-cw"
+                          color={myTheme.colors.onSurfaceVariant}
+                          size={24}
+                        />
+                      )}
                     />
-                  )}
-                </View>
-
-                <Menu
-                  visible={visibleRepeticao}
-                  onDismiss={() => {
-                    setVisibleRepeticao(!visibleRepeticao);
-                  }}
-                  anchor={
-                    <View style={{ width: "auto" }}>
-                      <Button
-                        onPress={() => {
-                          setVisibleRepeticao(!visibleRepeticao);
-                        }}
-                        mode="outlined"
-                        style={{ borderRadius: 22, borderWidth: 0, flex: 1 }}
-                        contentStyle={{
-                          backgroundColor: myTheme.colors.surfaceContainer,
-                          paddingVertical: 6,
-                        }}
-                        labelStyle={{
-                          color: "#000",
-                          fontWeight: "300",
-                          fontFamily: "InterRegular",
-                        }}
-                      >
-                        {repeticao
-                          ? repeticao.charAt(0).toUpperCase() +
-                            repeticao.slice(1) +
-                            " "
-                          : "Selecionar"}
-
-                        <Lucide name="chevron-down" size={18} color="#000" />
-                      </Button>
-                    </View>
                   }
-                  contentStyle={{
-                    backgroundColor: myTheme.colors.surfaceContainer,
-                    borderRadius: 22,
-                    paddingHorizontal: 8,
-                    marginBottom: -8,
-                  }}
-                >
-                  <Menu.Item
-                    style={styles.menuItem}
-                    titleStyle={{ fontSize: 16 }}
-                    onPress={() => {
-                      setRepeticao("único");
-                      setVisibleRepeticao(!visibleRepeticao);
-                    }}
-                    title="Único"
-                  />
-                  <Menu.Item
-                    style={styles.menuItem}
-                    titleStyle={{ fontSize: 16 }}
-                    onPress={() => {
-                      setRepeticao("diário");
-                      setVisibleRepeticao(!visibleRepeticao);
-                    }}
-                    title="Diário"
-                  />
-                  <Menu.Item
-                    style={styles.menuItem}
-                    titleStyle={{ fontSize: 16 }}
-                    onPress={() => {
-                      setRepeticao("semanal");
-                      setVisibleRepeticao(!visibleRepeticao);
-                    }}
-                    title="Semanal"
-                  />
-                  <Menu.Item
-                    style={styles.menuItem}
-                    titleStyle={{ fontSize: 16 }}
-                    onPress={() => {
-                      setRepeticao("mensal");
-                      setVisibleRepeticao(!visibleRepeticao);
-                    }}
-                    title="Mensal"
-                  />
-                </Menu>
+                  outlineStyle={styles.inputOutline}
+                  keyboardType="numeric"
+                  placeholder="Número de porções..."
+                  onChangeText={(text) => setRefeicoes(Number(text))}
+                  style={[styles.input, { backgroundColor: myTheme.colors.surfaceContainer }]}
+                />
               </View>
-
-              <Text style={{ color: myTheme.colors.primary }}>
-                Hora da execução
+              <Text style={styles.obs}>
+                OBS: os intervalos de execução são calculados por meio da
+                divisão exata de um dia completo, a partir do horário em que a
+                configuração foi salva.
               </Text>
-
-              <View style={styles.horaInput}>
-                <Text
-                  style={{ textAlign: "center" }}
-                  onPress={() => setOpenTime(true)}
-                >
-                  {time}
-                </Text>
-                {openTime && (
-                  <DateTimePicker
-                    value={stringParaDate(time)}
-                    mode="time"
-                    accentColor={myTheme.colors.primary}
-                    display="default"
-                    onChange={(event, selectedDate) => {
-                      if (selectedDate) {
-                        setTime(formatarHoraParaString(selectedDate));
-                      }
-                      setOpenTime(false);
-                    }}
-                  />
-                )}
-              </View>
             </>
           )}
         </View>
@@ -446,7 +451,7 @@ export default function Dispenser({}) {
 
       <View style={styles.bottom}>
         <Button
-          onPress={() => router.push("/home")}
+          onPress={() => sendCommand("CMD:ALIMENTAR")}
           style={styles.button}
           mode="contained"
           contentStyle={{ paddingVertical: 4 }}
@@ -455,14 +460,14 @@ export default function Dispenser({}) {
           Alimentar
         </Button>
         <Button
-          onPress={() => router.push("/home")}
+          onPress={() => salvar()}
           style={styles.button}
-          buttonColor={myTheme.colors.error}
+          buttonColor={myTheme.colors.secondary}
           mode="contained"
           contentStyle={{ paddingVertical: 4 }}
-          icon={() => <Lucide color="#ffffff" size={16} name="trash" />}
+          icon={() => <Lucide color="#ffffff" size={16} name="check" />}
         >
-          Deletar
+          Salvar
         </Button>
       </View>
     </View>
@@ -487,21 +492,25 @@ const styles = StyleSheet.create({
     backgroundColor: myTheme.colors.onPrimaryContainer,
     width: "100%",
   },
+  obs: {
+    color: myTheme.colors.error,
+    fontSize: 12,
+    backgroundColor: myTheme.colors.errorContainer,
+    marginVertical: 8,
+    padding: 14,
+    borderRadius: 16,
+  },
+  info: {
+    color: myTheme.colors.secondary,
+    fontSize: 12,
+    backgroundColor: myTheme.colors.onSecondaryContainer,
+    marginVertical: 8,
+    padding: 14,
+    borderRadius: 16,
+  },
   inputOutline: {
     borderRadius: 22,
     borderWidth: 0,
-  },
-  dataInput: {
-    backgroundColor: myTheme.colors.surfaceContainer,
-    borderRadius: 22,
-    padding: 16,
-    maxWidth: 120,
-  },
-  horaInput: {
-    backgroundColor: myTheme.colors.surfaceContainer,
-    borderRadius: 22,
-    padding: 16,
-    maxWidth: 80,
   },
   select: {
     backgroundColor: myTheme.colors.surfaceContainer,
@@ -514,7 +523,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     backgroundColor: myTheme.colors.surfaceContainerLowest,
     bottom: 0,
     width: "100%",

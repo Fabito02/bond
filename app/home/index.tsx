@@ -1,13 +1,45 @@
-import { View, StyleSheet, ScrollView} from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  FlatList,
+} from "react-native";
 import { TouchableRipple, Text, Searchbar } from "react-native-paper";
 import myTheme from "@/theme/theme";
 import Lucide from "@react-native-vector-icons/lucide";
 import CategoriaItem from "@/components/CategoriaItem";
 import DispenserItem from "@/components/DispenserItem";
-import { DispensersData } from "@/data";
 import { DispenserType } from "@/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState, useEffect } from "react";
 
 export default function Home() {
+  const [dispensers, setDispensers] = useState<DispenserType[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const getDispensers = async () => {
+    try {
+      const dispensers = await AsyncStorage.getItem("dispensersData");
+      if (dispensers !== null) {
+        setDispensers(JSON.parse(dispensers));
+      } else {
+        setDispensers([]);
+      }
+    } catch (error) {
+      setDispensers([]);
+    }
+  };
+
+  useEffect(() => {
+    getDispensers();
+  }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getDispensers();
+    setRefreshing(false);
+  };
 
   return (
     <View
@@ -35,46 +67,87 @@ export default function Home() {
           </TouchableRipple>
         )}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <View style={styles.titulo}>
-            <Text
-              variant="titleMedium"
-              style={{ color: myTheme.colors.primary }}
+      <View style={styles.container}>
+        <FlatList
+          data={dispensers}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[myTheme.colors.primary]}
+            />
+          }
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <DispenserItem item={item as DispenserType} />
+          )}
+          showsVerticalScrollIndicator={false}
+          numColumns={1}
+          ListEmptyComponent={() => (
+            <View
+              style={{
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "center",
+                height: 100,
+              }}
             >
-              Meus Dispensers
-            </Text>
-          </View>
-          <View>
-            <View>
-              {DispensersData.map((item) => (
-                <DispenserItem key={item.id} item={item as DispenserType} />
-              ))}
+              <Lucide
+                name="package-search"
+                color={myTheme.colors.onSurfaceVariant}
+                size={26}
+                style={{ marginRight: 8 }}
+              />
+              <Text
+                variant="titleMedium"
+                style={{
+                  color: myTheme.colors.onSurfaceVariant,
+                  fontSize: 14,
+                }}
+              >
+                Nenhum dispenser encontrado
+              </Text>
             </View>
-          </View>
-          <View style={styles.titulo}>
-            <Text
-              variant="titleMedium"
-              style={{ color: myTheme.colors.primary }}
-            >
-              Categorias
-            </Text>
-          </View>
-          <View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={{ gap: 16, height: "auto", flexDirection: "row" }}>
-                <CategoriaItem categoria="cachorro" />
-                <CategoriaItem categoria="gato" />
-                <CategoriaItem categoria="pássaro" />
-                <CategoriaItem categoria="roedor" />
-                <CategoriaItem categoria="coelho" />
-                <CategoriaItem categoria="tartaruga" />
-                <CategoriaItem categoria="outro" />
+          )}
+          ListHeaderComponent={
+            <View style={styles.titulo}>
+              <Text
+                variant="titleMedium"
+                style={{ color: myTheme.colors.primary }}
+              >
+                Meus Dispensers
+              </Text>
+            </View>
+          }
+          ListFooterComponent={
+            <View>
+              <View style={styles.titulo}>
+                <Text
+                  variant="titleMedium"
+                  style={{ color: myTheme.colors.primary }}
+                >
+                  Categorias
+                </Text>
               </View>
-            </ScrollView>
-          </View>
-        </View>
-      </ScrollView>
+              <View>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <View
+                    style={{ gap: 16, height: "auto", flexDirection: "row" }}
+                  >
+                    <CategoriaItem categoria="cachorro" />
+                    <CategoriaItem categoria="gato" />
+                    <CategoriaItem categoria="pássaro" />
+                    <CategoriaItem categoria="roedor" />
+                    <CategoriaItem categoria="coelho" />
+                    <CategoriaItem categoria="tartaruga" />
+                    <CategoriaItem categoria="outro" />
+                  </View>
+                </ScrollView>
+              </View>
+            </View>
+          }
+        />
+      </View>
     </View>
   );
 }
@@ -89,11 +162,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    marginBottom: 8,
   },
   searchbar: {
     borderRadius: 22,
     marginHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 10,
     backgroundColor: myTheme.colors.onPrimaryContainer,
   },
 });

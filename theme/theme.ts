@@ -2,6 +2,7 @@ import { MD3LightTheme } from "react-native-paper";
 import themeFonts from "./fonts";
 
 const primary = "#263864"
+const secondary = "#DFB44F"
 
 export const myTheme = {
   ...MD3LightTheme,
@@ -12,17 +13,17 @@ export const myTheme = {
     onPrimary: "#FFFFFF",
     primaryContainer: `${primary}34`,
     onPrimaryContainer: `${primary}18`,
-    secondary: "#DFB44F",
+    secondary: secondary,
     onSecondary: "#FFFFFF",
-    secondaryContainer: "#b375465e",
-    onSecondaryContainer: "#6A5E00",
+    SecondaryContainer: `${secondary}34`,
+    onSecondaryContainer: `${secondary}18`,
     tertiary: "#DFB44F",
     onTertiary: "#FFFFFF",
     tertiaryContainer: "#FFFFFF",
     onTertiaryContainer: "#747676",
     error: "#F16363",
     onError: "#FFFFFF",
-    errorContainer: "#FFDAD6",
+    errorContainer: "#F1636314",
     onErrorContainer: "#93000A",
     background: "#F4FCEF",
     onBackground: "#171D16",
