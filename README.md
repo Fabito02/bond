@@ -3,7 +3,7 @@
 ![Status](https://img.shields.io/badge/Status-Funcional%20em%20Desenvolvimento-orange)
 ![Status](https://img.shields.io/badge/Estado-Descontinuado-red)
 
-O Bond, em homenagem ao adorável cão da família Forger no anime e mangá Spy x Family, é um projeto focado na integração entre dispositivos móveis e sistemas de Internet das Coisas (IoT), desenvolvido para facilitar a alimantação de pets de forma prática e eficiente. 
+O Bond, em homenagem ao adorável cão da família Forger no anime e mangá Spy x Family, é um projeto focado na integração entre dispositivos móveis e sistemas de Internet das Coisas (IoT), desenvolvido para facilitar a alimentação de pets de forma prática e eficiente. 
 
 O foco central deste sistema é a comunicação via Bluetooth entre smartphones Android e módulos embarcados, permitindo o controle de dispositivos reaponsáveis por dispensar a comida de forma centralizada e intuitiva.
 
