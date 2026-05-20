@@ -1,50 +1,54 @@
-# Welcome to your Expo app 👋
+# Bond
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![Status](https://img.shields.io/badge/Status-Funcional%20em%20Desenvolvimento-orange)
+![Status](https://img.shields.io/badge/Estado-Descontinuado-red)
 
-## Get started
+O Bond, em homenagem ao adorável cão da família Forger no anime e mangá Spy x Family, é um projeto focado na integração entre dispositivos móveis e sistemas de Internet das Coisas (IoT), desenvolvido para facilitar a alimantação de pets de forma prática e eficiente. 
 
-1. Install dependencies
+O foco central deste sistema é a comunicação via Bluetooth entre smartphones Android e módulos embarcados, permitindo o controle de dispositivos reaponsáveis por dispensar a comida de forma centralizada e intuitiva.
 
-   ```bash
-   npm install
-   ```
+## Screenshots
 
-2. Start the app
+<table align="center">
+  <tr>
+    <td><img src="screenshots/1.png" width="250" alt="Tela Inicial"></td>
+    <td><img src="screenshots/2.png" width="250" alt="Conexão"></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/3.png" width="250" alt="Configuração"></td>
+    <td><img src="screenshots/4.png" width="250" alt="Listagem"></td>
+  </tr>
+</table>
 
-   ```bash
-   npx expo start
-   ```
+## Vídeo de Demonstração
 
-In the output, you'll find options to open the app in a
+https://github.com/user-attachments/assets/f00a8447-f60d-4bce-b795-5b8accd6545b
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Funcionalidades
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+* **Descoberta de dispositivos:** Escaneamento de hardware compatível disponível nas proximidades via protocolo Bluetooth.
+* **Pareamento e conexão:** Gerenciamento de conexões persistentes para controle de dispositivos em tempo real.
+* **Interface de controle:** Cards dedicados para cada dispositivo pareado, permitindo o envio de comandos e a configuração de automações.
+* **Persistência local:** Armazenamento das configurações de cada dispositivo, garantindo que as preferências sejam mantidas mesmo após o fechamento do aplicativo.
 
-## Get a fresh project
+## Tecnologias
 
-When you're ready, run:
+* **Front-end:** React Native com Expo, utilizando TypeScript.
+* **Comunicação:** Implementação de protocolo de comunicação Bluetooth para troca de mensagens com o hardware.
+* **Persistência:** Uso de AsyncStorage para gerenciamento local de estados e dados dos dispositivos configurados.
+* **Interface:** Componentes customizados focados em usabilidade, com suporte a fluxos dinâmicos de pareamento.
 
-```bash
-npm run reset-project
-```
+## Estrutura do Projeto
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+O sistema foi estruturado para ser modular, separando a camada de comunicação Bluetooth da lógica de apresentação. A interface de usuário é baseada em um fluxo de descoberta, pareamento e controle detalhado por dispositivo.
 
-## Learn more
+## Como utilizar
 
-To learn more about developing your project with Expo, look at the following resources:
+Para rodar o projeto localmente:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. Clone este repositório.
+2. Instale as dependências com `npm install`.
+3. Certifique-se de que o ambiente de desenvolvimento Android esteja configurado.
+4. Execute o projeto via `npx expo run:android`.
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+*Nota: O projeto faz uso de módulos nativos para a comunicação Bluetooth, sendo necessário um ambiente compatível com Android para realizar a conexão real com o hardware.*
